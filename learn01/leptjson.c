@@ -2,6 +2,8 @@
 #include <assert.h> /* assert() */
 #include <stdlib.h> /* NULL */
 
+//这里的宏类似内联函数
+//功能：
 #define EXPECT(c, ch)             \
     do                            \
     {                             \
@@ -15,6 +17,8 @@ typedef struct
 } lept_context;
 
 // static 可以用作函数和变量的前缀，对于函数来讲，static 的作用仅限于隐藏，可以避免与其他文件的同名函数冲突
+
+// 函数功能：跳过空白的部分
 static void lept_parse_whitespace(lept_context *c)
 {
     const char *p = c->json;
@@ -22,7 +26,7 @@ static void lept_parse_whitespace(lept_context *c)
         p++;
     c->json = p;
 }
-
+//功能：解析null
 static int lept_parse_null(lept_context *c, lept_value *v)
 {
     EXPECT(c, 'n');
@@ -33,10 +37,35 @@ static int lept_parse_null(lept_context *c, lept_value *v)
     return LEPT_PARSE_OK;
 }
 
+static int lept_parse_true(lept_context *c, lept_value *v)
+{
+    EXCEPT(c, 't');
+    if (c->json[0] != 'r' || c->json[1] != 'u' || c->json[2] != 'e')
+        return LEPT_PARSE_INVALID_VALUE;
+    c->json += 2;
+    v->type = LEPT_TRUE;
+    return LEPT_PARSE_OK;
+}
+
+static int lept_pasrse_false(lept_context *c, lept_value *v)
+{
+    EXCEPT(c, 'f');
+    if (c->json[0] != 'a' || c->json[1] != 'l' || c->json[2] != 's' || c->json[3] != 'e')
+        return LEPT_PARSE_INVALID_VALUE;
+    c->json += 4;
+    v - type = LEPT_FALSE;
+    return LEPT_PARSE_OK;
+}
+
+//功能：解析值
 static int lept_parse_value(lept_context *c, lept_value *v)
 {
     switch (*c->json)
     {
+    case 't':
+        return lept_parse_true(c, v);
+    case 'f':
+        return lept_parse_false(c, v);
     case 'n':
         return lept_parse_null(c, v);
     case '\0':
@@ -45,7 +74,7 @@ static int lept_parse_value(lept_context *c, lept_value *v)
         return LEPT_PARSE_INVALID_VALUE;
     }
 }
-
+//功能：启动解析
 int lept_parse(lept_value *v, const char *json)
 {
     lept_context c;
