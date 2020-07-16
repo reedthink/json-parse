@@ -7,12 +7,10 @@ static int main_ret = 0;
 static int test_count = 0;
 static int test_pass = 0;
 
-//之前看不明白，是没有意识到这里采用宏的原因。
-//从用途来看，这里的宏，和内联函数类似。特别是之前令我困惑的宏的编写，很多是不得已的操作
+/*之前看不明白，是没有意识到这里采用宏的原因。*/
+/*从用途来看，这里的宏，和内联函数类似。特别是之前令我困惑的宏的编写，很多是不得已的操作*/
 
-//给宏加注释
-
-//功能：判断满足EQ基础的比例
+/*功能：*/
 #define EXPECT_EQ_BASE(equality, expect, actual, format)                                                           \
     do                                                                                                             \
     {                                                                                                              \
@@ -25,11 +23,30 @@ static int test_pass = 0;
             main_ret = 1;                                                                                          \
         }                                                                                                          \
     } while (0)
-//功能：判断满足整数INT的比例
+/*功能：*/
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%d")
+#define EXPECT_EQ_DOUBLE(expect, actual) EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%.17g")
 
-// static 可以用作函数和变量的前缀，对于函数来讲，static 的作用仅限于隐藏，可以避免与其他文件的同名函数冲突
-//函数功能：空白测试
+#define TEST_ERROR(error, json)                      \
+    do                                               \
+    {                                                \
+        lept_value v;                                \
+        v.type = LEPT_FALSE;                         \
+        EXPECT_EQ_INT(error, lept_parse(&v, json));  \
+        EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v)); \
+    } while (0)
+
+#define TEST_NUMBER(expect, json)                           \
+    do                                                      \
+    {                                                       \
+        lept_value v;                                       \
+        EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, json)); \
+        EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(&v));      \
+        EXPECT_EQ_DOUBLE(expect, lept_get_number(&v));      \
+    } while (0);
+
+/*static 可以用作函数和变量的前缀，对于函数来讲，static 的作用仅限于隐藏，可以避免与其他文件的同名函数冲突*/
+
 static void test_parse_null()
 {
     lept_value v;
@@ -40,20 +57,13 @@ static void test_parse_null()
 
 static void test_parse_expect_value()
 {
-    lept_value v;
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, ""));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, " "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+    TEST_ERROR(LEPT_PARSE_EXPECT_VALUE, "");
+    TEST_ERROR(LEPT_PARSE_EXPECT_VALUE, " ");
 }
 
 static void test_parse_invalid_value()
 {
-    lept_value v;
+    /*lept_value v;
     v.type = LEPT_FALSE;
     EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, "nul"));
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
@@ -61,19 +71,34 @@ static void test_parse_invalid_value()
     v.type = LEPT_FALSE;
     EXPECT_EQ_INT(LEPT_PARSE_INVALID_VALUE, lept_parse(&v, "?"));
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+    这部分代码已经通过重构了，把测试代码写出bug，我可真行
+    */
+
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "nul");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "?");
+
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "+0");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "+1");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, ".123");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "1.");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "INF");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "inf");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "NAN");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "nan");
 }
 
 static void test_parse_root_not_singular()
 {
-    lept_value v;
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "null x"));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+    TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "null x");
+    TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0123");
+    TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0x0");
+    TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0x123");
 }
 static void test_parse_true()
 {
     lept_value v;
     v.type = LEPT_FALSE;
+
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "true"));
     EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
 }
@@ -83,7 +108,51 @@ static void test_parse_false()
     lept_value v;
     v.type = LEPT_TRUE;
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "false"));
-    EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
+    EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
+}
+
+static void test_parse_number()
+{
+    TEST_NUMBER(0.0, "0"); /*前一个参数是正确值，后一个参数是测试输入*/
+    TEST_NUMBER(0.0, "-0");
+    TEST_NUMBER(0.0, "-0.0");
+    TEST_NUMBER(1.0, "1");
+    TEST_NUMBER(-1.0, "-1");
+    TEST_NUMBER(1.5, "1.5");
+    TEST_NUMBER(-1.5, "-1.5");
+    TEST_NUMBER(3.1416, "3.1416");
+    TEST_NUMBER(1E10, "1E10");
+    TEST_NUMBER(1e10, "1e10");
+    TEST_NUMBER(1E+10, "1E+10");
+    TEST_NUMBER(1E-10, "1E-10");
+    TEST_NUMBER(-1E10, "-1E10");
+    TEST_NUMBER(-1e10, "-1e10");
+    TEST_NUMBER(-1E+10, "-1E+10");
+    TEST_NUMBER(-1E-10, "-1E-10");
+    TEST_NUMBER(1.234E+10, "1.234E+10");
+    TEST_NUMBER(1.234E-10, "1.234E-10");
+    TEST_NUMBER(0.0, "1e-10000"); /* must underflow */
+
+    /* the smallest number > 1 */
+    TEST_NUMBER(1.0000000000000002, "1.0000000000000002");
+    /* minimum denormal */
+    TEST_NUMBER(4.9406564584124654e-324, "4.9406564584124654e-324");
+    TEST_NUMBER(-4.9406564584124654e-324, "-4.9406564584124654e-324");
+    /* Max subnormal double */
+    TEST_NUMBER(2.2250738585072009e-308, "2.2250738585072009e-308");
+    TEST_NUMBER(-2.2250738585072009e-308, "-2.2250738585072009e-308");
+    /* Min normal positive double */
+    TEST_NUMBER(2.2250738585072014e-308, "2.2250738585072014e-308");
+    TEST_NUMBER(-2.2250738585072014e-308, "-2.2250738585072014e-308");
+    /* Max double */
+    TEST_NUMBER(1.7976931348623157e+308, "1.7976931348623157e+308");
+    TEST_NUMBER(-1.7976931348623157e+308, "-1.7976931348623157e+308");
+}
+
+static void test_parse_number_too_big()
+{
+    TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "1e309");
+    TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "-1e309");
 }
 
 static void test_parse()
@@ -91,9 +160,11 @@ static void test_parse()
     test_parse_null();
     test_parse_true();
     test_parse_false();
+    test_parse_number();
     test_parse_expect_value();
     test_parse_invalid_value();
     test_parse_root_not_singular();
+    test_parse_number_too_big();
 }
 
 int main()

@@ -63,10 +63,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hhh/githubProject/json-tutorial/tutorial01
+CMAKE_SOURCE_DIR = /home/hhh/c02/json-parse/learn01
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hhh/githubProject/json-tutorial/tutorial01
+CMAKE_BINARY_DIR = /home/hhh/c02/json-parse/learn01
 
 # Include any dependencies generated for this target.
 include CMakeFiles/leptjson.dir/depend.make
@@ -79,16 +79,16 @@ include CMakeFiles/leptjson.dir/flags.make
 
 CMakeFiles/leptjson.dir/leptjson.c.o: CMakeFiles/leptjson.dir/flags.make
 CMakeFiles/leptjson.dir/leptjson.c.o: leptjson.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hhh/githubProject/json-tutorial/tutorial01/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/leptjson.dir/leptjson.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/leptjson.dir/leptjson.c.o   -c /home/hhh/githubProject/json-tutorial/tutorial01/leptjson.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hhh/c02/json-parse/learn01/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/leptjson.dir/leptjson.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/leptjson.dir/leptjson.c.o   -c /home/hhh/c02/json-parse/learn01/leptjson.c
 
 CMakeFiles/leptjson.dir/leptjson.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/leptjson.dir/leptjson.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/hhh/githubProject/json-tutorial/tutorial01/leptjson.c > CMakeFiles/leptjson.dir/leptjson.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/hhh/c02/json-parse/learn01/leptjson.c > CMakeFiles/leptjson.dir/leptjson.c.i
 
 CMakeFiles/leptjson.dir/leptjson.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/leptjson.dir/leptjson.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/hhh/githubProject/json-tutorial/tutorial01/leptjson.c -o CMakeFiles/leptjson.dir/leptjson.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/hhh/c02/json-parse/learn01/leptjson.c -o CMakeFiles/leptjson.dir/leptjson.c.s
 
 # Object files for target leptjson
 leptjson_OBJECTS = \
@@ -100,7 +100,7 @@ leptjson_EXTERNAL_OBJECTS =
 libleptjson.a: CMakeFiles/leptjson.dir/leptjson.c.o
 libleptjson.a: CMakeFiles/leptjson.dir/build.make
 libleptjson.a: CMakeFiles/leptjson.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hhh/githubProject/json-tutorial/tutorial01/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libleptjson.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hhh/c02/json-parse/learn01/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libleptjson.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/leptjson.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/leptjson.dir/link.txt --verbose=$(VERBOSE)
 
@@ -114,6 +114,6 @@ CMakeFiles/leptjson.dir/clean:
 .PHONY : CMakeFiles/leptjson.dir/clean
 
 CMakeFiles/leptjson.dir/depend:
-	cd /home/hhh/githubProject/json-tutorial/tutorial01 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hhh/githubProject/json-tutorial/tutorial01 /home/hhh/githubProject/json-tutorial/tutorial01 /home/hhh/githubProject/json-tutorial/tutorial01 /home/hhh/githubProject/json-tutorial/tutorial01 /home/hhh/githubProject/json-tutorial/tutorial01/CMakeFiles/leptjson.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/hhh/c02/json-parse/learn01 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hhh/c02/json-parse/learn01 /home/hhh/c02/json-parse/learn01 /home/hhh/c02/json-parse/learn01 /home/hhh/c02/json-parse/learn01 /home/hhh/c02/json-parse/learn01/CMakeFiles/leptjson.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/leptjson.dir/depend
 

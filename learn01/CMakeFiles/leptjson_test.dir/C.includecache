@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/home/hhh/githubProject/json-tutorial/tutorial01/leptjson.h
+/home/hhh/c02/json-parse/learn01/leptjson.h
 
-/home/hhh/githubProject/json-tutorial/tutorial01/test.c
+/home/hhh/c02/json-parse/learn01/test.c
 stdio.h
 -
 stdlib.h
@@ -16,5 +16,5 @@ stdlib.h
 string.h
 -
 leptjson.h
-/home/hhh/githubProject/json-tutorial/tutorial01/leptjson.h
+/home/hhh/c02/json-parse/learn01/leptjson.h
 
