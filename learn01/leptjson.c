@@ -33,7 +33,7 @@
         c->top = head;    \
         return ret;       \
     } while (0)
-
+/*这个结构保存的是读入的字符流*/
 typedef struct
 {
     /* const char*是指向常量的指针,而不是指针本身为常量,可以不被初始化.该指针可以指向常量也可以指向变量,只是从该指针的角度而言,它所指向的是常量。
@@ -256,6 +256,56 @@ static int lept_parse_string(lept_context *c, lept_value *v)
         }
     }
 }
+static int lept_parse_value(lept_context *c, lept_value *v);
+
+static int lept_parse_array(lept_context *c, lept_value *v)
+{
+    size_t size = 0, i;
+    int ret;
+    EXPECT(c, '[');
+    lept_parse_whitespace(c);
+    if (*c->json == ']')
+    {
+        c->json++;
+        v->type = LEPT_ARRAY;
+        v->u.a.size = 0;
+        v->u.a.e = NULL;
+        return LEPT_PARSE_OK;
+    }
+    for (;;)
+    {
+        lept_value e;
+        lept_init(&e);
+        if ((ret = lept_parse_value(c, &e)) != LEPT_PARSE_OK)
+            break;
+        memcpy(lept_context_push(c, sizeof(lept_value)), &e, sizeof(lept_value));
+        size++;
+        lept_parse_whitespace(c);
+        if (*c->json == ',')
+        {
+            c->json++;
+            lept_parse_whitespace(c);
+        }
+        else if (*c->json == ']')
+        {
+            c->json++;
+            v->type = LEPT_ARRAY;
+            v->u.a.size = size; /*Todo 那么union是如何判断使用哪一段*/
+            size *= sizeof(lept_value);
+            memcpy(v->u.a.e = (lept_value *)malloc(size), lept_context_pop(c, size), size);
+            return LEPT_PARSE_OK;
+        }
+        else
+        {
+            ret = LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET;
+            break;
+        }
+    }
+    for (i = 0; i < size; i++)
+        lept_free((lept_value *)lept_context_pop(c, sizeof(lept_value)));
+    return ret;
+}
+
 /*功能：解析*/
 static int lept_parse_value(lept_context *c, lept_value *v)
 {
@@ -271,6 +321,8 @@ static int lept_parse_value(lept_context *c, lept_value *v)
         return LEPT_PARSE_EXPECT_VALUE;
     case '\"':
         return lept_parse_string(c, v);
+    case '[':
+        return lept_parse_array(c, v);
     default:
         return lept_parse_number(c, v);
     }
@@ -285,11 +337,36 @@ void lept_set_string(lept_value *v, const char *s, size_t len)
     v->u.s.len = len;
     v->type = LEPT_STRING;
 }
+
+size_t lept_get_array_size(const lept_value *v)
+{
+    assert(v != NULL && v->type == LEPT_ARRAY);
+    return v->u.a.size;
+}
+lept_value *lept_get_array_element(const lept_value *v, size_t index)
+{
+    assert(v != NULL && v->type == LEPT_ARRAY);
+    assert(index < v->u.a.size);
+    return &v->u.a.e[index];
+}
+
 void lept_free(lept_value *v)
 {
+    size_t i;
     assert(v != NULL);
-    if (v->type == LEPT_STRING)
+    switch (v->type)
+    {
+    case LEPT_STRING:
         free(v->u.s.s);
+        break;
+    case LEPT_ARRAY:
+        for (i = 0; i < v->u.a.size; i++)
+            lept_free(&v->u.a.e[i]);
+        free(v->u.a.e);
+        break;
+    default:
+        break;
+    }
     v->type = LEPT_NULL;
 }
 
