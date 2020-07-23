@@ -15,10 +15,16 @@ typedef enum
 } lept_type;
 
 typedef struct lept_value lept_value;
+typedef struct lept_member lept_member;
 struct lept_value
 {
     union
     {
+        struct
+        {
+            lept_member *m;
+            size_t size;
+        } o;
         struct
         {
             lept_value *e;
@@ -32,6 +38,13 @@ struct lept_value
         double n;
     } u;
     lept_type type;
+};
+
+struct lept_member
+{
+    char *k;
+    size_t klen;
+    lept_value v;
 };
 
 enum
@@ -74,5 +87,10 @@ void lept_set_string(lept_value *v, const char *s, size_t len);
 
 size_t lept_get_array_size(const lept_value *v);
 lept_value *lept_get_array_element(const lept_value *v, size_t index);
+
+size_t lept_get_object_size(const lept_value *v);
+const char *lept_get_object_key(const lept_value *v, size_t index);
+size_t lept_get_object_key_length(const lept_value *v, size_t index);
+lept_value *lept_get_object_value(const lept_value *v, size_t index);
 
 #endif /* LEPTJSON_H__ */
