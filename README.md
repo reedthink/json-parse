@@ -6,8 +6,10 @@
 Linux
 
 ## 编译：
-cmake . && 
+cmake . && make
+
+## 运行测试：
+./leptjson_test
 
 ## 其他：
 `git commit --amend --no-edit   # 追加到上次commit。不会进入编辑器，直接进行提交`
-
