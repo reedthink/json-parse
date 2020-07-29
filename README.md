@@ -17,7 +17,7 @@ cmake . && make
 ./leptjson_test
 
 ## 其他：
-`git commit --amend --no-edit   # 追加到上次commit。不会进入编辑器，直接进行提交,`
+`git commit --amend --no-edit   # 追加到上次commit。不会进入编辑器，直接进行提交,但是不能直接推到远程，会造成冲突`
 
 值得注意的点：
 - 测试驱动开发。这是第一次进行实践
