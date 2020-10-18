@@ -315,7 +315,7 @@ static int lept_parse_array(lept_context *c, lept_value *v)
         lept_free((lept_value *)lept_context_pop(c, sizeof(lept_value)));
     return ret;
 }
-/*这个函数没看懂*/
+/*解析对象，难点之一*/
 static int lept_parse_object(lept_context *c, lept_value *v)
 {
     size_t i, size;
@@ -527,7 +527,7 @@ lept_value *lept_get_object_value(const lept_value *v, size_t index)
     return &v->u.o.m[index].v;
 }
 
-/*功能：启动解析*/
+/*功能：解析入口*/
 int lept_parse(lept_value *v, const char *json)
 {
     lept_context c;
