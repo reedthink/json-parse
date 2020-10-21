@@ -5,3 +5,6 @@ CMakeCache.txt
 Makefile
 leptjson_test
 libleptjson.a
+main
+*.i
+main.c

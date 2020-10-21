@@ -1,11 +1,12 @@
 参考[json-tutorial](https://github.com/miloyip/json-tutorial)项目写的一个json解析器
 
 ## 特点：
-- 符合[标准](https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)的JSON解析器
+- 符合[ECMA-404标准](https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)的JSON解析器
 - 递归下降解析器
+- 解析器的数据结构主要采用栈
 - 使用标准C (ANSI)
-- 仅支持 UTF-8 JSON文本
-- 仅支持以 double 存储 JSON number 类型
+- 支持 UTF-8 JSON文本
+- 支持以 double 存储 JSON number 类型
 
 ## 运行环境：
 Linux

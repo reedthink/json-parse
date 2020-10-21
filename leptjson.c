@@ -33,11 +33,12 @@
         c->top = head;    \
         return ret;       \
     } while (0)
+
 /*这个结构保存的是读入的字符流*/
 typedef struct
 {
     /* const char*是指向常量的指针,而不是指针本身为常量,可以不被初始化.该指针可以指向常量也可以指向变量,只是从该指针的角度而言,它所指向的是常量。
-    通过该指针不能修改它所指向的数据. 是这里使用const cahr*的根本原因*/
+    通过该指针不能修改它所指向的数据. 是这里使用const char*的根本原因*/
     const char *json;
     char *stack; /*缓冲区。*/
     size_t size, top;
@@ -45,7 +46,7 @@ typedef struct
 
 /* static 可以用作函数和变量的前缀，对于函数来讲，static 的作用仅限于隐藏，可以避免与其他文件的同名函数冲突*/
 
-/* 函数功能：跳过空白的部分*/
+/* 功能：跳过空白的部分*/
 static void lept_parse_whitespace(lept_context *c)
 {
     const char *p = c->json;
@@ -53,9 +54,8 @@ static void lept_parse_whitespace(lept_context *c)
         p++;
     c->json = p;
 }
-
+/* 功能：*/
 static int lept_parse_literal(lept_context *c, lept_value *v, const char *literal, lept_type type)
-
 {
     size_t i; /*注意在 C 语言中，数组长度、索引值最好使用 size_t 类型，而不是 int 或 unsigned。*/
     EXPECT(c, literal[0]);
@@ -110,6 +110,7 @@ static int lept_parse_number(lept_context *c, lept_value *v)
     v->type = LEPT_NUMBER;
     return LEPT_PARSE_OK;
 }
+/*  */
 static void *lept_context_push(lept_context *c, size_t size)
 {
     void *ret;
@@ -464,6 +465,40 @@ void lept_free(lept_value *v)
     v->type = LEPT_NULL;
 }
 
+/**
+ * json字符串生成器
+ * **/
+static void lept_stringify_string(lept_context* c, const char* s, size_t len) {
+    static const char hex_digits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    size_t i, size;
+    char* head, *p;
+    assert(s != NULL);
+    p = head = lept_context_push(c, size = len * 6 + 2); /* "\u00xx..." */
+    *p++ = '"';
+    for (i = 0; i < len; i++) {
+        unsigned char ch = (unsigned char)s[i];
+        switch (ch) {
+            case '\"': *p++ = '\\'; *p++ = '\"'; break;
+            case '\\': *p++ = '\\'; *p++ = '\\'; break;
+            case '\b': *p++ = '\\'; *p++ = 'b';  break;
+            case '\f': *p++ = '\\'; *p++ = 'f';  break;
+            case '\n': *p++ = '\\'; *p++ = 'n';  break;
+            case '\r': *p++ = '\\'; *p++ = 'r';  break;
+            case '\t': *p++ = '\\'; *p++ = 't';  break;
+            default:
+                if (ch < 0x20) {
+                    *p++ = '\\'; *p++ = 'u'; *p++ = '0'; *p++ = '0';
+                    *p++ = hex_digits[ch >> 4];
+                    *p++ = hex_digits[ch & 15];
+                }
+                else
+                    *p++ = s[i];
+        }
+    }
+    *p++ = '"';
+    c->top -= size - (p - head);
+}
+
 lept_type lept_get_type(const lept_value *v)
 {
     assert(v != NULL);
@@ -549,7 +584,7 @@ int lept_parse(lept_value *v, const char *json)
             ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
         }
     }
-    assert(c.top == 0);
+    assert(c.top == 0); 
     /*释放时加入断言确保所有数据都被弹出*/
     free(c.stack);
     return ret;
