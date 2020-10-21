@@ -65,12 +65,14 @@ enum
     LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET
 };
 
+/*初始化，将type的值置为LEPT_NULL*/
+/*用上 do { ... } while(0) 是为了把表达式转为语句，模仿无返回值的函数。*/
 #define lept_init(v)           \
     do                         \
     {                          \
         (v)->type = LEPT_NULL; \
     } while (0)
-/*用上 do { ... } while(0) 是为了把表达式转为语句，模仿无返回值的函数。*/
+
 
 int lept_parse(lept_value *v, const char *json);
 void lept_free(lept_value *v);

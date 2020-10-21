@@ -9,7 +9,8 @@
 #define LEPT_PARSE_STACK_INIT_SIZE 256
 #endif
 
-/*这里的宏功能类似内联函数*/
+/*这里的宏功能类似内联函数，但是从可读性角度分析，宏实在是难读*/
+
 /*功能：判断字符串的开头是不是ch，是的话就把字符串向后走一位*/
 #define EXPECT(c, ch)             \
     do                            \
@@ -110,7 +111,9 @@ static int lept_parse_number(lept_context *c, lept_value *v)
     v->type = LEPT_NUMBER;
     return LEPT_PARSE_OK;
 }
-/*  */
+/** 功能：扩大内存空间
+ * 返回值：一个指向主堆栈顶部的指针
+*/
 static void *lept_context_push(lept_context *c, size_t size)
 {
     void *ret;
@@ -129,6 +132,10 @@ static void *lept_context_push(lept_context *c, size_t size)
     c->top += size;
     return ret;
 }
+
+/*功能：减少栈的大小，弹出栈
+  返回值：指向栈顶的指针
+*/
 static void *lept_context_pop(lept_context *c, size_t size)
 {
     assert(c->top >= size);
@@ -469,7 +476,8 @@ void lept_free(lept_value *v)
  * json字符串生成器
  * **/
 static void lept_stringify_string(lept_context* c, const char* s, size_t len) {
-    static const char hex_digits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    
+    static const char hex_digits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };//字符集
     size_t i, size;
     char* head, *p;
     assert(s != NULL);
